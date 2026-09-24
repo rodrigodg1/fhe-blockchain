@@ -39,7 +39,58 @@ npx hardhat compile
 Depois de existir um `package-lock.json`, use `npm ci` para reinstalar.
 Não inicialize outro projeto dentro desta pasta.
 
-## 3. Contrato completo: HealthPlain.sol
+## 3. Contrato introdutório: SimplePlain.sol
+
+Antes de analisar vetores e laços, este contrato apresenta a forma mais elementar
+de uma função em Solidity: receber dois números inteiros e retornar sua soma.
+Ele corresponde à mesma soma vista no início do percurso (`20 + 38 = 58`).
+
+<!-- codigo: exemplos/fhevm/contracts/SimplePlain.sol -->
+Arquivo: [`exemplos/fhevm/contracts/SimplePlain.sol`](../exemplos/fhevm/contracts/SimplePlain.sol).
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.27;
+
+/// @notice Exemplo introdutorio: soma simples de dois valores em claro.
+contract SimplePlain {
+    function add(uint32 a, uint32 b) external pure returns (uint32) {
+        return a + b;
+    }
+}
+```
+<!-- /codigo -->
+
+`uint32 a, uint32 b` são os parâmetros de entrada. `pure` indica que a função
+opera unicamente com os argumentos passados, sem ler nem modificar o estado da blockchain.
+`returns (uint32)` especifica o tipo retornado.
+
+### Teste do contrato introdutório
+
+O teste confirma o funcionamento da chamada na rede local do Hardhat:
+
+<!-- codigo: exemplos/fhevm/test/SimplePlain.ts -->
+Arquivo: [`exemplos/fhevm/test/SimplePlain.ts`](../exemplos/fhevm/test/SimplePlain.ts).
+
+```typescript
+import { strict as assert } from "node:assert";
+import { ethers } from "hardhat";
+import type { SimplePlain } from "../types";
+
+describe("SimplePlain", function () {
+  it("soma dois valores em claro (20 + 38 = 58)", async function () {
+    const factory = await ethers.getContractFactory("SimplePlain");
+    const contract = (await factory.deploy()) as SimplePlain;
+    await contract.waitForDeployment();
+
+    const sum = await contract.add(20, 38);
+    assert.equal(sum, 58n);
+  });
+});
+```
+<!-- /codigo -->
+
+## 4. Contrato completo com estatísticas: HealthPlain.sol
 
 <!-- codigo: exemplos/fhevm/contracts/HealthPlain.sol -->
 Arquivo: [`exemplos/fhevm/contracts/HealthPlain.sol`](../exemplos/fhevm/contracts/HealthPlain.sol).
@@ -97,7 +148,7 @@ O tipo `uint8` comporta `0..255`. O carregador do exemplo exige percentuais em
 `0..100`, mas o contrato não valida a origem clínica nem esse intervalo menor.
 Mesmo para quatro valores iguais a 255, a soma dos quadrados, `260.100`, cabe em `uint32`.
 
-## 4. Código completo: leitura dos dados
+## 5. Código completo: leitura dos dados
 
 Os scripts e testes usam o mesmo arquivo abaixo. Ele verifica o JSON produzido
 no módulo 1 e calcula a resposta em claro para comparação.
@@ -162,7 +213,7 @@ da função validam o conteúdo; uma declaração de tipo sozinha não valida um
 `referencia` usa operações JavaScript e converte os resultados para `bigint`,
 o tipo usado por ethers para os inteiros devolvidos pelo contrato.
 
-## 5. Código completo: demonstração em claro
+## 6. Código completo: demonstração em claro
 
 <!-- codigo: exemplos/fhevm/scripts/demo-plain.ts -->
 Arquivo: [`exemplos/fhevm/scripts/demo-plain.ts`](../exemplos/fhevm/scripts/demo-plain.ts).
@@ -234,7 +285,7 @@ Quantidade acima de 30: 1
 Soma acima de 30: 38
 ```
 
-## 6. Código completo: teste do contrato
+## 7. Código completo: teste do contrato de estatísticas
 
 <!-- codigo: exemplos/fhevm/test/HealthPlain.ts -->
 Arquivo: [`exemplos/fhevm/test/HealthPlain.ts`](../exemplos/fhevm/test/HealthPlain.ts).

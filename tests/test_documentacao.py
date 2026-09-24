@@ -47,7 +47,7 @@ class DocumentationTests(unittest.TestCase):
         for path in (ROOT / "exemplos").rglob("*"):
             if not path.is_file() or path.suffix not in {".rs", ".ts", ".sol"}:
                 continue
-            if any(part in {"node_modules", "target", "types", "artifacts", "cache"} for part in path.parts):
+            if any(part in {"node_modules", "target", "types", "artifacts", "cache", "fhevmTemp"} for part in path.parts):
                 continue
             relative = path.relative_to(ROOT).as_posix()
             with self.subTest(source=relative):

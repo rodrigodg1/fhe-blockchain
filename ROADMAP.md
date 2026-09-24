@@ -425,7 +425,8 @@ Arquivo: [`exemplos/fhevm/package.json`](exemplos/fhevm/package.json).
     "demo:sepolia": "hardhat run scripts/demo-healthcare.ts --network sepolia",
     "demo:plain": "hardhat run scripts/demo-plain.ts --network hardhat",
     "test:plain": "hardhat test test/HealthPlain.ts --network hardhat",
-    "test:fhe": "hardhat test test/HealthStats.ts --network hardhat"
+    "test:fhe": "hardhat test test/HealthStats.ts --network hardhat",
+    "test:simple": "hardhat test test/SimplePlain.ts test/SimpleAdd.ts --network hardhat"
   },
   "dependencies": {
     "@fhevm/solidity": "0.11.1",
@@ -1645,7 +1646,58 @@ npx hardhat compile
 Depois de existir um `package-lock.json`, use `npm ci` para reinstalar.
 Não inicialize outro projeto dentro desta pasta.
 
-### 3. Contrato completo: HealthPlain.sol
+### 3. Contrato introdutório: SimplePlain.sol
+
+Antes de analisar vetores e laços, este contrato apresenta a forma mais elementar
+de uma função em Solidity: receber dois números inteiros e retornar sua soma.
+Ele corresponde à mesma soma vista no início do percurso (`20 + 38 = 58`).
+
+<!-- codigo: exemplos/fhevm/contracts/SimplePlain.sol -->
+Arquivo: [`exemplos/fhevm/contracts/SimplePlain.sol`](exemplos/fhevm/contracts/SimplePlain.sol).
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.27;
+
+/// @notice Exemplo introdutorio: soma simples de dois valores em claro.
+contract SimplePlain {
+    function add(uint32 a, uint32 b) external pure returns (uint32) {
+        return a + b;
+    }
+}
+```
+<!-- /codigo -->
+
+`uint32 a, uint32 b` são os parâmetros de entrada. `pure` indica que a função
+opera unicamente com os argumentos passados, sem ler nem modificar o estado da blockchain.
+`returns (uint32)` especifica o tipo retornado.
+
+#### Teste do contrato introdutório
+
+O teste confirma o funcionamento da chamada na rede local do Hardhat:
+
+<!-- codigo: exemplos/fhevm/test/SimplePlain.ts -->
+Arquivo: [`exemplos/fhevm/test/SimplePlain.ts`](exemplos/fhevm/test/SimplePlain.ts).
+
+```typescript
+import { strict as assert } from "node:assert";
+import { ethers } from "hardhat";
+import type { SimplePlain } from "../types";
+
+describe("SimplePlain", function () {
+  it("soma dois valores em claro (20 + 38 = 58)", async function () {
+    const factory = await ethers.getContractFactory("SimplePlain");
+    const contract = (await factory.deploy()) as SimplePlain;
+    await contract.waitForDeployment();
+
+    const sum = await contract.add(20, 38);
+    assert.equal(sum, 58n);
+  });
+});
+```
+<!-- /codigo -->
+
+### 4. Contrato completo com estatísticas: HealthPlain.sol
 
 <!-- codigo: exemplos/fhevm/contracts/HealthPlain.sol -->
 Arquivo: [`exemplos/fhevm/contracts/HealthPlain.sol`](exemplos/fhevm/contracts/HealthPlain.sol).
@@ -1703,7 +1755,7 @@ O tipo `uint8` comporta `0..255`. O carregador do exemplo exige percentuais em
 `0..100`, mas o contrato não valida a origem clínica nem esse intervalo menor.
 Mesmo para quatro valores iguais a 255, a soma dos quadrados, `260.100`, cabe em `uint32`.
 
-### 4. Código completo: leitura dos dados
+### 5. Código completo: leitura dos dados
 
 Os scripts e testes usam o mesmo arquivo abaixo. Ele verifica o JSON produzido
 no módulo 1 e calcula a resposta em claro para comparação.
@@ -1768,7 +1820,7 @@ da função validam o conteúdo; uma declaração de tipo sozinha não valida um
 `referencia` usa operações JavaScript e converte os resultados para `bigint`,
 o tipo usado por ethers para os inteiros devolvidos pelo contrato.
 
-### 5. Código completo: demonstração em claro
+### 6. Código completo: demonstração em claro
 
 <!-- codigo: exemplos/fhevm/scripts/demo-plain.ts -->
 Arquivo: [`exemplos/fhevm/scripts/demo-plain.ts`](exemplos/fhevm/scripts/demo-plain.ts).
@@ -1840,7 +1892,7 @@ Quantidade acima de 30: 1
 Soma acima de 30: 38
 ```
 
-### 6. Código completo: teste do contrato
+### 7. Código completo: teste do contrato de estatísticas
 
 <!-- codigo: exemplos/fhevm/test/HealthPlain.ts -->
 Arquivo: [`exemplos/fhevm/test/HealthPlain.ts`](exemplos/fhevm/test/HealthPlain.ts).
@@ -1917,7 +1969,122 @@ Um **handle** identifica um ciphertext; não é o número em claro. Na arquitetu
 Zama, o contrato registra operações e os coprocessadores executam o trabalho FHE.
 No Hardhat local, esse comportamento é simulado.
 
-### 2. Contrato completo: HealthStats.sol
+### 2. Contrato introdutório cifrado: SimpleAdd.sol
+
+Em contrapartida direta a `SimplePlain.sol` do módulo 6, este contrato realiza
+a mesma soma elementar de dois números (`20 + 38 = 58`), mas operando exclusivamente
+sobre dados cifrados com a biblioteca FHEVM. O contrato nunca tem acesso aos valores
+em claro.
+
+<!-- codigo: exemplos/fhevm/contracts/SimpleAdd.sol -->
+Arquivo: [`exemplos/fhevm/contracts/SimpleAdd.sol`](exemplos/fhevm/contracts/SimpleAdd.sol).
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.27;
+
+import {FHE, euint32, externalEuint32}
+    from "@fhevm/solidity/lib/FHE.sol";
+import {ZamaEthereumConfig}
+    from "@fhevm/solidity/config/ZamaConfig.sol";
+
+/// @notice Exemplo introdutorio: soma simples de dois valores cifrados.
+contract SimpleAdd is ZamaEthereumConfig {
+    event Result(bytes32 sumHandle);
+
+    function add(
+        externalEuint32 inputA,
+        externalEuint32 inputB,
+        bytes calldata inputProof
+    ) external {
+        // 1. Carrega e valida as entradas cifradas com a prova criptografica.
+        euint32 a = FHE.fromExternal(inputA, inputProof);
+        euint32 b = FHE.fromExternal(inputB, inputProof);
+
+        // 2. Executa a adicao homomorfica diretamente sobre os ciphertexts.
+        euint32 sum = FHE.add(a, b);
+
+        // 3. Libera o resultado cifrado para decifracao publica.
+        FHE.makePubliclyDecryptable(sum);
+
+        // 4. Emite o handle do resultado para o cliente solicitar a decifracao.
+        emit Result(FHE.toBytes32(sum));
+    }
+}
+```
+<!-- /codigo -->
+
+#### Como o fluxo funciona
+
+1. **Entradas externas**: `inputA` e `inputB` recebem handles cifrados produzidos
+   no cliente (`externalEuint32`).
+2. **Prova de entrada**: `inputProof` comprova criptograficamente que as entradas
+   foram cifradas para o endereço deste contrato e assinadas pelo remetente.
+3. **Conversão FHE**: `FHE.fromExternal` valida a prova e instancia os tipos
+   cifrados internos `euint32`.
+4. **Cálculo homomórfico**: `FHE.add(a, b)` calcula a soma diretamente sobre
+   os ciphertexts.
+5. **Permissão de decifração**: `FHE.makePubliclyDecryptable(sum)` autoriza que
+   o handle resultante seja decifrado publicamente.
+6. **Emissão do handle**: `emit Result(FHE.toBytes32(sum))` publica o handle
+   de 32 bytes no recibo da transação.
+
+#### Teste do contrato introdutório cifrado
+
+O teste a seguir demonstra o ciclo FHEVM completo: geração da entrada cifrada
+no cliente com o plugin do Hardhat, envio da transação, captura do handle
+emitido no evento e decifração pública com `fhevm.publicDecrypt`.
+
+<!-- codigo: exemplos/fhevm/test/SimpleAdd.ts -->
+Arquivo: [`exemplos/fhevm/test/SimpleAdd.ts`](exemplos/fhevm/test/SimpleAdd.ts).
+
+```typescript
+import { strict as assert } from "node:assert";
+import { ethers, fhevm } from "hardhat";
+import type { SimpleAdd } from "../types";
+
+describe("SimpleAdd", function () {
+  before(function () {
+    if (!fhevm.isMock) throw new Error("Use a rede hardhat para esta suite");
+  });
+
+  it("soma dois valores cifrados (20 + 38 = 58)", async function () {
+    const [signer] = await ethers.getSigners();
+    const factory = await ethers.getContractFactory("SimpleAdd");
+    const contract = (await factory.deploy()) as SimpleAdd;
+    await contract.waitForDeployment();
+    const address = await contract.getAddress();
+
+    // 1. Cria e cifra as entradas localmente no cliente
+    const input = fhevm.createEncryptedInput(address, signer.address);
+    input.add32(20);
+    input.add32(38);
+    const enc = await input.encrypt();
+
+    // 2. Envia a chamada com os handles e a prova de cifracao
+    const tx = await contract.connect(signer).add(enc.handles[0], enc.handles[1], enc.inputProof);
+    const receipt = await tx.wait();
+    assert(receipt && receipt.status === 1);
+
+    // 3. Captura o handle do resultado a partir do evento
+    const events = receipt.logs
+      .filter(log => log.address.toLowerCase() === address.toLowerCase())
+      .map(log => contract.interface.parseLog(log))
+      .filter(log => log?.name === "Result");
+    assert.equal(events.length, 1);
+    const resultHandle = String(events[0]!.args[0]) as `0x${string}`;
+
+    // 4. Decifra publicamente o resultado atraves do servico FHEVM
+    const decrypted = await fhevm.publicDecrypt([resultHandle]);
+    const clearSum = decrypted.clearValues[resultHandle];
+
+    assert.equal(clearSum, 58n);
+  });
+});
+```
+<!-- /codigo -->
+
+### 3. Contrato completo com estatísticas: HealthStats.sol
 
 <!-- codigo: exemplos/fhevm/contracts/HealthStats.sol -->
 Arquivo: [`exemplos/fhevm/contracts/HealthStats.sol`](exemplos/fhevm/contracts/HealthStats.sol).
@@ -2016,7 +2183,7 @@ quadrados, contagem e soma filtrada.
 Este exemplo publica os agregados para verificar os cálculos. Não adicione dados
 clínicos privados. Uma soma filtrada com contagem 1 identifica o valor selecionado.
 
-### 3. Código completo: enviar entradas e ler resultados
+### 4. Código completo: enviar entradas e ler resultados
 
 Este auxiliar é usado tanto pela demonstração quanto pelos testes.
 
@@ -2094,7 +2261,7 @@ amostra pública. Não há uma segunda função on-chain que receba esses númer
 Se uma aplicação usar o plaintext recebido para alterar estado on-chain, precisará
 verificar a prova de decifração; esse fluxo não está implementado neste exemplo.
 
-### 4. Código completo: demonstração FHEVM
+### 5. Código completo: demonstração FHEVM
 
 <!-- codigo: exemplos/fhevm/scripts/demo-healthcare.ts -->
 Arquivo: [`exemplos/fhevm/scripts/demo-healthcare.ts`](exemplos/fhevm/scripts/demo-healthcare.ts).
@@ -2160,7 +2327,7 @@ está no [módulo 6](modulos/06-solidity.md).
 `fhevm.isMock` informa se a execução usa a simulação local. A média e a variância
 são calculadas no TypeScript, após recuperar os agregados, como no programa Rust.
 
-### 5. Execute localmente
+### 6. Execute localmente
 
 ```bash
 cd "$FHE_ROADMAP_ROOT/exemplos/fhevm"

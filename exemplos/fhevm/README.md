@@ -43,8 +43,10 @@ criptográfico de uma rede real.
 
 | Caminho | Função |
 |---|---|
-| `contracts/HealthPlain.sol` | Cálculo em claro |
-| `contracts/HealthStats.sol` | Cálculo FHEVM |
+| `contracts/SimplePlain.sol` | Soma simples em claro |
+| `contracts/SimpleAdd.sol` | Soma simples com FHEVM |
+| `contracts/HealthPlain.sol` | Estatísticas em claro |
+| `contracts/HealthStats.sol` | Estatísticas com FHEVM |
 | `scripts/dataset.ts` | Leitura da amostra e cálculo de referência |
 | `scripts/calculo.ts` | Entrada cifrada, transação e recuperação dos agregados |
 | `scripts/demo-plain.ts` | Demonstração do contrato em claro |

@@ -14,7 +14,8 @@
     "demo:sepolia": "hardhat run scripts/demo-healthcare.ts --network sepolia",
     "demo:plain": "hardhat run scripts/demo-plain.ts --network hardhat",
     "test:plain": "hardhat test test/HealthPlain.ts --network hardhat",
-    "test:fhe": "hardhat test test/HealthStats.ts --network hardhat"
+    "test:fhe": "hardhat test test/HealthStats.ts --network hardhat",
+    "test:simple": "hardhat test test/SimplePlain.ts test/SimpleAdd.ts --network hardhat"
   },
   "dependencies": {
     "@fhevm/solidity": "0.11.1",
