@@ -1,0 +1,141 @@
+Ambiente: Python 3.13.5; Node.js 22.16.0; npm 10.9.2.
+Somente os comandos abaixo foram executados. Circom/snarkjs/Hardhat/Solidity NÃO foram executados.
+
+$ python3 -m unittest discover -s zkp/exemplos/schnorr -v
+test_blinding_changes_commitment (test_schnorr.SchnorrTests.test_blinding_changes_commitment) ... ok
+test_commitment_tampering (test_schnorr.SchnorrTests.test_commitment_tampering) ... ok
+test_context_tampering (test_schnorr.SchnorrTests.test_context_tampering) ... ok
+test_does_not_claim_range (test_schnorr.SchnorrTests.test_does_not_claim_range) ... ok
+test_fresh_proof_for_same_statement (test_schnorr.SchnorrTests.test_fresh_proof_for_same_statement) ... ok
+test_group_parameters (test_schnorr.SchnorrTests.test_group_parameters) ... ok
+test_invalid_subgroup (test_schnorr.SchnorrTests.test_invalid_subgroup) ... ok
+test_json_does_not_export_secrets (test_schnorr.SchnorrTests.test_json_does_not_export_secrets) ... ok
+test_malformed_json (test_schnorr.SchnorrTests.test_malformed_json) ... ok
+test_noncanonical_scalar (test_schnorr.SchnorrTests.test_noncanonical_scalar) ... ok
+test_nonce_commitment_tampering (test_schnorr.SchnorrTests.test_nonce_commitment_tampering) ... ok
+test_public_json_roundtrip (test_schnorr.SchnorrTests.test_public_json_roundtrip) ... ok
+test_response_tampering (test_schnorr.SchnorrTests.test_response_tampering) ... ok
+test_valid_proof (test_schnorr.SchnorrTests.test_valid_proof) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 1.610s
+
+OK
+CÓDIGO DE RETORNO: 0
+
+$ node --test zkp/exemplos/circom/test/unit.test.cjs
+TAP version 13
+# Subtest: estatísticas da amostra pública do repositório
+ok 1 - estatísticas da amostra pública do repositório
+  ---
+  duration_ms: 1.78219
+  type: 'test'
+  ...
+# Subtest: escala preserva quatro casas decimais sem arredondamento
+ok 2 - escala preserva quatro casas decimais sem arredondamento
+  ---
+  duration_ms: 0.261373
+  type: 'test'
+  ...
+# Subtest: limites zero, cem e variância máxima do exemplo
+ok 3 - limites zero, cem e variância máxima do exemplo
+  ---
+  duration_ms: 0.252028
+  type: 'test'
+  ...
+# Subtest: contagem é estritamente maior, não maior ou igual
+ok 4 - contagem é estritamente maior, não maior ou igual
+  ---
+  duration_ms: 0.314267
+  type: 'test'
+  ...
+# Subtest: rejeita dados fora do domínio
+ok 5 - rejeita dados fora do domínio
+  ---
+  duration_ms: 1.388944
+  type: 'test'
+  ...
+# Subtest: coorte tem tamanho fixo
+ok 6 - coorte tem tamanho fixo
+  ---
+  duration_ms: 0.239039
+  type: 'test'
+  ...
+# Subtest: campo escalar e sua representação canônica
+ok 7 - campo escalar e sua representação canônica
+  ---
+  duration_ms: 0.349496
+  type: 'test'
+  ...
+# Subtest: ordem das entradas públicas corresponde ao componente main
+ok 8 - ordem das entradas públicas corresponde ao componente main
+  ---
+  duration_ms: 0.260819
+  type: 'test'
+  ...
+# Subtest: conversão de G2 inverte coeficientes uma única vez
+ok 9 - conversão de G2 inverte coeficientes uma única vez
+  ---
+  duration_ms: 0.373797
+  type: 'test'
+  ...
+# Subtest: conversão ABI mantém sinais e troca a ordem de G2
+ok 10 - conversão ABI mantém sinais e troca a ordem de G2
+  ---
+  duration_ms: 0.543197
+  type: 'test'
+  ...
+# Subtest: chave de outro circuito é recusada pelo adaptador
+ok 11 - chave de outro circuito é recusada pelo adaptador
+  ---
+  duration_ms: 0.213619
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 76.870777
+CÓDIGO DE RETORNO: 0
+
+$ python3 -m unittest discover -s zkp/tests -v
+test_add_only_and_idempotent (test_incremento.IncrementTests.test_add_only_and_idempotent) ... ok
+test_blocked_directory (test_incremento.IncrementTests.test_blocked_directory) ... ok
+test_collision_aborts_before_copy (test_incremento.IncrementTests.test_collision_aborts_before_copy) ... ok
+test_dry_run_does_not_write (test_incremento.IncrementTests.test_dry_run_does_not_write) ... ok
+test_path_traversal_is_rejected (test_incremento.IncrementTests.test_path_traversal_is_rejected) ... ok
+test_symlink_is_rejected (test_incremento.IncrementTests.test_symlink_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.051s
+
+OK
+CÓDIGO DE RETORNO: 0
+
+$ python3 zkp/scripts/verificar_estatico.py
+23 blocos integrais conferidos.
+Sintaxe e formatos conferidos: {'Python': 6, 'JavaScript': 12, 'JSON': 3}
+Circom, snarkjs e Solidity exigem os comandos de integração descritos em zkp/VALIDACAO.md.
+CÓDIGO DE RETORNO: 0
+
+$ python3 zkp/exemplos/schnorr/schnorr.py demo --out <temporario>/proof.json
+Prova válida: True
+Arquivo público: <temporario>/proof.json
+A prova demonstra conhecimento da abertura, não o intervalo nem a origem clínica.
+CÓDIGO DE RETORNO: 0
+
+$ python3 zkp/exemplos/schnorr/schnorr.py verify <temporario>/proof.json --context healthcare:amostra-publica:v1
+PROVA VALIDA
+CÓDIGO DE RETORNO: 0
+
+$ python3 zkp/exemplos/schnorr/schnorr.py verify <temporario>/proof.json --context outro-contexto
+PROVA INVALIDA
+CÓDIGO DE RETORNO: 1
+
+$ python3 zkp/exemplos/schnorr/schnorr.py verify <temporario>/proof-adulterada.json --context healthcare:amostra-publica:v1
+PROVA INVALIDA
+CÓDIGO DE RETORNO: 1

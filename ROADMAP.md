@@ -1,6 +1,6 @@
 # FHE aplicada a dados de saúde
 
-[Início](README.md) · [Referências](REFERENCIAS.md) · [Verificações](VALIDACAO.md)
+[Início](README.md) · [Referências](REFERENCIAS.md) · [Verificações](VALIDACAO.md) · [Extensão ZKP](ZKP.md)
 
 Este arquivo reúne a instalação, a configuração e os oito módulos. Os mesmos textos estão disponíveis em arquivos separados. Os blocos mostram o código completo dos arquivos usados em cada etapa.
 

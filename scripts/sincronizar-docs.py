@@ -90,7 +90,7 @@ def rebase(text: str, document: Path) -> str:
 def compile_roadmap(contents: dict[Path, str]) -> str:
     result = [
         "# FHE aplicada a dados de saúde\n",
-        "[Início](README.md) · [Referências](REFERENCIAS.md) · [Verificações](VALIDACAO.md)\n",
+        "[Início](README.md) · [Referências](REFERENCIAS.md) · [Verificações](VALIDACAO.md) · [Extensão ZKP](ZKP.md)\n",
         "Este arquivo reúne a instalação, a configuração e os oito módulos. "
         "Os mesmos textos estão disponíveis em arquivos separados. "
         "Os blocos mostram o código completo dos arquivos usados em cada etapa.\n",
@@ -117,7 +117,7 @@ def main() -> int:
     for path in sorted(ROOT.rglob("*.md")):
         if path == ROOT / "ROADMAP.md":
             continue
-        if any(part in {"node_modules", "target", ".git"} for part in path.relative_to(ROOT).parts):
+        if any(part in {"node_modules", "target", ".git", "zkp"} for part in path.relative_to(ROOT).parts):
             continue
         contents[path] = expand(path, path.read_text(encoding="utf-8"))
     contents[ROOT / "ROADMAP.md"] = compile_roadmap(contents)

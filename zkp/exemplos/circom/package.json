@@ -1,0 +1,40 @@
+{
+  "name": "fhe-blockchain-zkp-healthcare",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Exemplos isolados de ZKP em healthcare: Circom, Groth16, PLONK e Solidity",
+  "engines": {
+    "node": ">=22 <23"
+  },
+  "scripts": {
+    "doctor": "node scripts/zk.cjs doctor",
+    "compilar": "node scripts/zk.cjs compile all",
+    "preparar": "node scripts/zk.cjs setup all",
+    "dados": "node scripts/zk.cjs inputs",
+    "witness": "node scripts/zk.cjs witness",
+    "provar": "node scripts/zk.cjs prove",
+    "verificar": "node scripts/zk.cjs verify",
+    "demo": "node scripts/zk.cjs demo",
+    "demo:todos": "node scripts/zk.cjs demo all",
+    "demo:plonk": "node scripts/zk.cjs plonk intervalo",
+    "test": "npm run test:unit && npm run test:zk && npm run test:contratos",
+    "test:unit": "node --test test/unit.test.cjs",
+    "test:zk": "node scripts/test-zk.cjs",
+    "test:contratos": "hardhat test --network hardhat",
+    "compile:solidity": "hardhat compile",
+    "demo:contrato": "hardhat run scripts/onchain.cjs --network hardhat",
+    "exportar:verificador": "node scripts/zk.cjs export intervalo",
+    "limpar": "node scripts/zk.cjs clean"
+  },
+  "dependencies": {
+    "circomlib": "2.0.5",
+    "circomlibjs": "0.1.7",
+    "snarkjs": "0.7.6"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "3.1.3",
+    "ethers": "6.16.0",
+    "hardhat": "2.28.6",
+    "solc": "0.8.24"
+  }
+}

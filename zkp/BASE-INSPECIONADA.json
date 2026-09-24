@@ -1,0 +1,37 @@
+{
+  "repository": "https://github.com/rodrigodg1/fhe-blockchain",
+  "branch": "main",
+  "commit": "d555acdeda18d53b214ea386d71e7ee8a4fcc4f0",
+  "new_top_level_paths": [
+    "ZKP.md",
+    "zkp/"
+  ],
+  "existing_top_level_paths": [
+    ".gitattributes",
+    ".gitignore",
+    ".nvmrc",
+    "CONFIGURACAO.md",
+    "INSTALACAO.md",
+    "LICENSE",
+    "MANUTENCAO.md",
+    "PROBLEMAS.md",
+    "PROVENIENCIA.md",
+    "PUBLICACAO.md",
+    "README.md",
+    "REFERENCIAS.md",
+    "ROADMAP.md",
+    "SHA256SUMS.txt",
+    "VALIDACAO.md",
+    "dados",
+    "exemplos",
+    "modulos",
+    "scripts",
+    "tests"
+  ],
+  "inspected_files": {
+    "README.md": "47eab8856f06fe1441455597834a81d49e53db04",
+    "exemplos/fhevm/package.json": "c82ee4947de4ab98ee611e06dea3acd3e06ef310",
+    "dados/processado/amostra.json": "248666294a030cc1390db0abae0cce91bd2eec15"
+  },
+  "note": "Hashes dos arquivos são Git blob SHA-1 retornados pelo GitHub, não checksums SHA-256 do incremento. Nenhum arquivo anterior está incluído no ZIP."
+}
