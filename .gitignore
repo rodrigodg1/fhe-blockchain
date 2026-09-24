@@ -1,0 +1,16 @@
+**/node_modules/
+**/target/
+**/artifacts/
+**/cache/
+**/types/
+**/fhevmTemp/
+**/__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+execucoes/
+dados/original/*.csv
+dados/original/*.json
+dados/grupo*/
+.DS_Store

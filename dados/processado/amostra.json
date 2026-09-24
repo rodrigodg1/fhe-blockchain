@@ -1,0 +1,29 @@
+{
+  "dataset": "Heart Failure Clinical Records",
+  "dataset_id": 519,
+  "dataset_doi": "10.24432/C5Z89R",
+  "source_url": "https://archive.ics.uci.edu/ml/machine-learning-databases/00519/heart_failure_clinical_records_dataset.csv",
+  "license": "CC BY 4.0",
+  "source_sha256": "249a5673585edef9d66da2049f58ce9b2a93b09307de55693bf8fce10b2af9f4",
+  "source_records_available": 8,
+  "variable": "ejection_fraction",
+  "unit": "%",
+  "source_rows": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "values": [
+    20,
+    38,
+    20,
+    20
+  ],
+  "count": 4,
+  "sum": 98,
+  "mean": 24.5,
+  "sum_squares": 2644,
+  "population_variance": 60.75,
+  "public_reference_only": true
+}
